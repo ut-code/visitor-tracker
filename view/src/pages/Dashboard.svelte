@@ -8,12 +8,12 @@
 	import type { Kind } from '~/share/schema';
 
 	const URL_LABELS = new Map([
-		['keiba.utcode.net', '競馬 AI'],
 		['maze.utcode.net', 'はじプロ/迷路'],
-		['blosite.utcode.net', 'Blosite'],
-		['mahjong.utcode.net', '一人麻雀'],
-		['othello.utcode.net', 'オセロ'],
-		['security.utcode.net', 'セキュリティ']
+		['boardgame.utcode.net', 'オセロ'],
+		['page8.utcode.net', '8番ページ'],
+		['browser-hack.utcode.net', 'ブラウザハック入門'],
+		['life-code.utcode.net', 'Life Code'],
+		['plusoperatorgame.onrender.com', 'プラス演算子ゲーム']
 	]);
 
 	type Props = {
