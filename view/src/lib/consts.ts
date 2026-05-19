@@ -57,7 +57,10 @@ export const TIME_RANGE_OPTIONS: TimeRangeOption[] = [
 	}
 ];
 
-export function resolveTimeRangeByKey(key: string, now: Date): {
+export function resolveTimeRangeByKey(
+	key: string,
+	now: Date
+): {
 	start: Date;
 	end: Date;
 	duration: number;
