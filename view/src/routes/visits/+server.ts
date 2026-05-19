@@ -7,19 +7,11 @@ import { resolveTimeRangeByKey } from '~/lib/consts';
 export const GET: ServerLoad = async ({ url, platform }) => {
 	const now = new Date();
 	const rangeKey = url.searchParams.get('range');
-	let range = rangeKey ? resolveTimeRangeByKey(rangeKey, now) : null;
-	if (!range) {
-		const duration = Number.parseInt(url.searchParams.get('duration') ?? '');
-		if (!duration)
-			return new Response(
-				`{"error": "failed to parse ${url.searchParams.get('duration')} to number"}`
-			);
-		range = {
-			start: new Date(now.getTime() - duration),
-			end: now,
-			duration
-		};
-	}
+	if (!rangeKey)
+		return new Response('{"error":"range is required"}', { status: 400 });
+	const range = resolveTimeRangeByKey(rangeKey, now);
+	if (!range)
+		return new Response(`{"error":"invalid range: ${rangeKey}"}`, { status: 400 });
 	const kind = url.searchParams.get('kind') ?? 'all';
 
 	if (!platform) return new Response('platform not found');
