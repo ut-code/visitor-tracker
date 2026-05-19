@@ -1,5 +1,10 @@
 <script lang="ts">
-	import { HOUR, DAY } from '~/lib/consts';
+	import {
+		DEFAULT_TIME_RANGE_KEY,
+		HOUR,
+		resolveTimeRangeByKey,
+		TIME_RANGE_OPTIONS
+	} from '~/lib/consts';
 	import * as v from 'valibot';
 	import Dashboard from '~/pages/Dashboard.svelte';
 	import { type Kind, visit } from '~/share/schema';
@@ -7,11 +12,14 @@
 	let visits: Promise<Visit[]> = $state(new Promise(() => {}));
 
 	let kind: Kind | 'all' = $state('all');
+	let rangeKey: string = $state(DEFAULT_TIME_RANGE_KEY);
 	let duration: number = $state(12 * HOUR);
 	let lastFetch: Date = $state(new Date());
 
 	$effect(() => {
-		visits = fetch(`/visits?kind=${kind}&duration=${duration}`)
+		const range = resolveTimeRangeByKey(rangeKey, new Date());
+		if (!range) return;
+		visits = fetch(`/visits?kind=${kind}&range=${rangeKey}`)
 			.then((res) => res.json())
 			.then((val) => {
 				const parsed = v.safeParse(v.array(visit), val);
@@ -22,20 +30,18 @@
 				return parsed.output;
 			})
 			.then((val) => {
-				lastFetch = new Date();
+				duration = range.duration;
+				lastFetch = range.end;
 				return val;
 			});
 	});
 </script>
 
 <header>
-	<select name="duration" bind:value={duration} class="select select-bordered w-full max-w-sm">
-		<option value={3 * HOUR}>3 hours</option>
-		<option value={6 * HOUR}>6 hours</option>
-		<option selected value={12 * HOUR}>12 hours</option>
-		<option value={1 * DAY}>1 day</option>
-		<option value={3 * DAY}>3 days</option>
-		<option value={6 * DAY}>6 days</option>
+	<select name="range" bind:value={rangeKey} class="select select-bordered w-full max-w-sm">
+		{#each TIME_RANGE_OPTIONS as option}
+			<option value={option.key}>{option.label}</option>
+		{/each}
 	</select>
 	<select name="kind" bind:value={kind} class="select select-bordered w-full max-w-sm">
 		<option value="all">All</option>
